@@ -3,7 +3,21 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
 import { InferenceClient } from '@huggingface/inference'
 
-export default function createServer({ config }) {
+// HF_TOKEN을 Smithery 유저에게 입력받기 위한 스키마
+export const configSchema = z.object({
+    HF_TOKEN: z.string().describe('Hugging Face API token')
+})
+
+export default function createServer({
+    config
+}: {
+    config: z.infer<typeof configSchema>
+}) {
+    // HF_TOKEN을 process.env에 설정
+    if (config?.HF_TOKEN) {
+        process.env.HF_TOKEN = config.HF_TOKEN
+    }
+
     // Create server instance
     const server = new McpServer({
         name: 'greeting-server',
@@ -379,5 +393,7 @@ ${code}
         process.exit(1)
     })
 
-    return server.server
+    // Register your tools here...
+
+    return server.server // Must return the MCP server object
 }
