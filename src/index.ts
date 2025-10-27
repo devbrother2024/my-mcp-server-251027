@@ -367,5 +367,17 @@ ${code}
         }
     )
 
+    // 서버 시작
+    async function main() {
+        const transport = new StdioServerTransport()
+        await server.connect(transport)
+        console.error('TypeScript MCP 서버가 시작되었습니다!')
+    }
+
+    main().catch(error => {
+        console.error('서버 시작 중 오류 발생:', error)
+        process.exit(1)
+    })
+
     return server.server
 }
