@@ -1,5 +1,7 @@
 # TypeScript MCP Server 보일러플레이트
 
+[![smithery badge](https://smithery.ai/badge/@devbrother2024/my-mcp-server-251027)](https://smithery.ai/server/@devbrother2024/my-mcp-server-251027)
+
 TypeScript MCP SDK를 활용하여 Model Context Protocol (MCP) 서버를 빠르게 개발할 수 있는 보일러플레이트 프로젝트입니다.
 
 ## 📁 프로젝트 구조
@@ -15,6 +17,14 @@ typescript-mcp-server-boilerplate/
 ```
 
 ## 🚀 시작하기
+
+### Installing via Smithery
+
+To install TypeScript MCP Server 보일러플레이트 automatically via [Smithery](https://smithery.ai/server/@devbrother2024/my-mcp-server-251027):
+
+```bash
+npx -y @smithery/cli install @devbrother2024/my-mcp-server-251027
+```
 
 ### 1. 의존성 설치
 
