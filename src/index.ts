@@ -1,11 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
 import { InferenceClient } from '@huggingface/inference'
 
-// HF_TOKEN을 Smithery 유저에게 입력받기 위한 스키마
+// Define config schema with HF_TOKEN
 export const configSchema = z.object({
-    HF_TOKEN: z.string().describe('Hugging Face API token')
+    HF_TOKEN: z.string().describe('Hugging Face API Token for image generation')
 })
 
 export default function createServer({
@@ -13,11 +12,6 @@ export default function createServer({
 }: {
     config: z.infer<typeof configSchema>
 }) {
-    // HF_TOKEN을 process.env에 설정
-    if (config?.HF_TOKEN) {
-        process.env.HF_TOKEN = config.HF_TOKEN
-    }
-
     // Create server instance
     const server = new McpServer({
         name: 'greeting-server',
@@ -188,19 +182,19 @@ export default function createServer({
         async ({ prompt }) => {
             try {
                 // Check if HF_TOKEN is available
-                if (!process.env.HF_TOKEN) {
+                if (!config.HF_TOKEN) {
                     return {
                         content: [
                             {
                                 type: 'text' as const,
-                                text: '오류: HF_TOKEN 환경 변수가 설정되지 않았습니다.\nHugging Face API 토큰을 설정해주세요.'
+                                text: '오류: HF_TOKEN이 설정되지 않았습니다.\nHugging Face API 토큰을 설정해주세요.'
                             }
                         ],
                         isError: true
                     }
                 }
 
-                const client = new InferenceClient(process.env.HF_TOKEN)
+                const client = new InferenceClient(config.HF_TOKEN)
 
                 // Generate image
                 const image = await client.textToImage({
@@ -380,20 +374,6 @@ ${code}
             }
         }
     )
-
-    // 서버 시작
-    async function main() {
-        const transport = new StdioServerTransport()
-        await server.connect(transport)
-        console.error('TypeScript MCP 서버가 시작되었습니다!')
-    }
-
-    main().catch(error => {
-        console.error('서버 시작 중 오류 발생:', error)
-        process.exit(1)
-    })
-
-    // Register your tools here...
 
     return server.server // Must return the MCP server object
 }
