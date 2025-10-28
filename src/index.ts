@@ -2,11 +2,12 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import { InferenceClient } from '@huggingface/inference'
 
-// Define config schema with HF_TOKEN
+// Configuration schema for HF_TOKEN
 export const configSchema = z.object({
-    HF_TOKEN: z.string().describe('Hugging Face API Token for image generation')
+    HF_TOKEN: z.string().describe('Hugging Face API token for image generation')
 })
 
+// Export default createServer function as required by Smithery
 export default function createServer({
     config
 }: {
@@ -22,6 +23,9 @@ export default function createServer({
             prompts: {}
         }
     })
+
+    // Store HF_TOKEN from config
+    const HF_TOKEN = config.HF_TOKEN
 
     // Register greeting tool
     server.tool(
@@ -181,20 +185,8 @@ export default function createServer({
         },
         async ({ prompt }) => {
             try {
-                // Check if HF_TOKEN is available
-                if (!config.HF_TOKEN) {
-                    return {
-                        content: [
-                            {
-                                type: 'text' as const,
-                                text: '오류: HF_TOKEN이 설정되지 않았습니다.\nHugging Face API 토큰을 설정해주세요.'
-                            }
-                        ],
-                        isError: true
-                    }
-                }
-
-                const client = new InferenceClient(config.HF_TOKEN)
+                // Use HF_TOKEN from config
+                const client = new InferenceClient(HF_TOKEN)
 
                 // Generate image
                 const image = await client.textToImage({
@@ -375,5 +367,6 @@ ${code}
         }
     )
 
-    return server.server // Must return the MCP server object
+    // Return the server object as required by Smithery
+    return server.server
 }
